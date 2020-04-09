@@ -63,9 +63,9 @@ def get_linesyle(txt):
 def print_stats(data, column_name):
     data = sorted(data, key= lambda x:x[0])
     for i in data:
-        print 'Mean and median (and 99th p)' \
+        print ('Mean and median (and 99th p)' \
             + column_name +' for ' + i[3] + ' is ' + str(i[0]) + ' -- ' + str(i[1]) \
-            + ' -- ' + str(i[2])
+            + ' -- ' + str(i[2]))
 
 
 def draw_cdf(raw_data, figure, file_name, column_name):

@@ -7,9 +7,8 @@ local_dir = local_dir[:-1]
 
 def open_and_run(open_dir, run_command):
     command = 'cd %s/%s && python %s'%(local_dir, open_dir, run_command)
-    print command
+    print(command)
     os.system(command)
-
 
 experiments = [
     'KMeans',

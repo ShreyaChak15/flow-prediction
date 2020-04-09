@@ -6,6 +6,8 @@ from keras.models import Sequential
 from keras.layers import Dense
 from keras.layers import LSTM
 from keras.layers import Activation
+from keras.models import load_model
+from keras.callbacks import callbacks, ModelCheckpoint, EarlyStopping
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.metrics import r2_score
 import os
@@ -13,18 +15,18 @@ import os
 # fix random seed for reproducibility
 numpy.random.seed(7)
 
-TEST_NAME = "KMeans"
+#TEST_NAME = "KMeans"
 #TEST_NAME = "PageRank"
 #TEST_NAME = "SGD"
-#TEST_NAME = "tensorflow"
+TEST_NAME = "tensorflow"
 #TEST_NAME = "web_server"
 look_back = 5
 
-TRAIN_PATH = '../data/ml/' + TEST_NAME +'/training/'
-TEST_PATH = '../data/ml/' + TEST_NAME +'/test/'
-VALIDATION_PATH = '../data/ml/' + TEST_NAME +'/validation/'
-
-
+TRAIN_PATH = 'data/ml/' + TEST_NAME +'/training/'
+TEST_PATH = 'data/ml/' + TEST_NAME +'/test/'
+VALIDATION_PATH = 'data/ml/' + TEST_NAME +'/validation/'
+MODEL_SAVE_PATH = 'model/model_' + TEST_NAME + '.h5'
+CHECKPOINT_PATH = 'model/checkpoints/model_' + TEST_NAME + '.hdf5'
 def create_dataset(dataset, look_back=1):
     dataX, dataY = [], []
     for i in range(len(dataset)-look_back-1):
@@ -53,27 +55,40 @@ def load_dataset(path, ):
 scaler = MinMaxScaler(feature_range=(0, 1))
 
 train = load_dataset(TRAIN_PATH)
+print("*** Training dataset loaded ***")
 train = scaler.fit_transform(train)
 
 test = load_dataset(TEST_PATH)
+print("*** Test dataset loaded ***")
 test = scaler.transform(test)
 
 validation = load_dataset(VALIDATION_PATH)
+print("*** Validation dataset loaded ***")
 validation = scaler.transform(validation)
 
 
 trainX, trainY = create_dataset(train, look_back)
 testX, testY = create_dataset(test, look_back)
 validationX, validationY = create_dataset(validation, look_back)
+print("*** All datasets created ***")
 
 model = Sequential()
 model.add(Dense(5, input_dim=trainX.shape[1], activation='relu'))
 model.add(Dense(5, activation='relu'))
 model.add(Dense(1, activation='sigmoid'))
 model.compile(loss='mean_absolute_error', optimizer='adam')
-model.fit(trainX, trainY, epochs=250, batch_size=10, verbose=2)
+es = EarlyStopping(monitor='val_loss', mode='min', verbose=1, patience=10, restore_best_weights=True)
+#checkpoint = ModelCheckpoint(CHECKPOINT_PATH, monitor='val_loss', verbose=1, save_best_only=True)
+#callbacks_list = [es, checkpoint]
+
+model.fit(trainX, trainY, validation_data=(validationX, validationY), epochs=250, batch_size=10, verbose=2, callbacks=[es])
+model.save(MODEL_SAVE_PATH)
+print("*** Model fitted ***")
+print("Saved model to disk")
 
 # make predictions
+model = load_model(MODEL_SAVE_PATH)
+
 trainPredict = model.predict(trainX)
 testPredict = model.predict(testX)
 validationPredict = model.predict(validationX)
