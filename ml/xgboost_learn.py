@@ -9,23 +9,25 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import random
+import pickle
 
 random.seed(0)
 
 NUMBER_OF_TREES = 50
 WINDOW_SIZE = 5
 
-TEST_NAME = 'PageRank'
+#TEST_NAME = 'PageRank'
 #TEST_NAME = 'KMeans'
-#TEST_NAME = 'SGD'
+TEST_NAME = 'SGD'
 #TEST_NAME = 'tensorflow'
 #TEST_NAME = 'web_server'
 
 TARGET_COLUMN = 'flow_size'
 
-TRAINING_PATH = '../data/ml/' + TEST_NAME + '/training/'
-TEST_PATH = '../data/ml/' + TEST_NAME + '/test/'
-VALIDATION_PATH = '../data/ml/' + TEST_NAME + '/validation/'
+TRAINING_PATH = 'data/ml/' + TEST_NAME + '/training/'
+TEST_PATH = 'data/ml/' + TEST_NAME + '/test/'
+VALIDATION_PATH = 'data/ml/' + TEST_NAME + '/validation/'
+MODEL_SAVE_PATH = 'model/xgboost/model_' + TEST_NAME + '.pkl'
 
 training_files = [os.path.join(TRAINING_PATH, f) for f in os.listdir(TRAINING_PATH)]
 test_files = [os.path.join(TEST_PATH, f) for f in os.listdir(TEST_PATH)]
@@ -48,9 +50,10 @@ param = {
 }
 
 training = xgboost.DMatrix(inputs, outputs, feature_names = data[0][0].columns)
-print len(outputs)
-print 'Training started'
+print (len(outputs))
+print ('Training started')
 model = xgboost.train(param, training, param['num_epochs'])
+pickle.dump(model, open(MODEL_SAVE_PATH, "wb"))
 
 def print_performance(files, write_to_simulator=False):
     real = []
@@ -59,6 +62,7 @@ def print_performance(files, write_to_simulator=False):
         data = xgboost_util.prepare_files([f], WINDOW_SIZE, scaling, TARGET_COLUMN)
         inputs, outputs = xgboost_util.make_io(data)
 
+        model = pickle.load(open(MODEL_SAVE_PATH, "rb"))
         y_pred = model.predict(xgboost.DMatrix(inputs, feature_names = data[0][0].columns))
         pred = y_pred.tolist()
 
@@ -67,13 +71,11 @@ def print_performance(files, write_to_simulator=False):
 
     xgboost_util.print_metrics(real, predicted)
 
-print 'TRAINING'
+print ('TRAINING')
 print_performance(training_files)
-print
 
-print 'TEST'
+print ('TEST')
 print_performance(test_files)
-print
 
-print 'VALIDATION'
+print ('VALIDATION')
 print_performance(validation_files)

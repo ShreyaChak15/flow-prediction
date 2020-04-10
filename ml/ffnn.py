@@ -27,6 +27,7 @@ TEST_PATH = 'data/ml/' + TEST_NAME +'/test/'
 VALIDATION_PATH = 'data/ml/' + TEST_NAME +'/validation/'
 MODEL_SAVE_PATH = 'model/model_' + TEST_NAME + '.h5'
 CHECKPOINT_PATH = 'model/checkpoints/model_' + TEST_NAME + '.hdf5'
+
 def create_dataset(dataset, look_back=1):
     dataX, dataY = [], []
     for i in range(len(dataset)-look_back-1):

@@ -6,24 +6,27 @@ import math
 from keras.models import Sequential
 from keras.layers import Dense
 from keras.layers import LSTM
+from keras.models import load_model
+from keras.callbacks import callbacks, ModelCheckpoint, EarlyStopping
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.metrics import r2_score
 import os
 
 numpy.random.seed(7)
 
-TEST_NAME = "PageRank"
-#TEST_NAME = "KMeans"
+#TEST_NAME = "PageRank"
+TEST_NAME = "KMeans"
 #TEST_NAME = "SGD"
 #TEST_NAME = "tensorflow"
 #TEST_NAME = "web_server"
 
 look_back = 3
 
-TRAIN_PATH = '../data/ml/' + TEST_NAME +'/training/'
-TEST_PATH = '../data/ml/' + TEST_NAME +'/test/'
-VALIDATION_PATH = '../data/ml/' + TEST_NAME +'/validation/'
-
+TRAIN_PATH = 'data/ml/' + TEST_NAME +'/training/'
+TEST_PATH = 'data/ml/' + TEST_NAME +'/test/'
+VALIDATION_PATH = 'data/ml/' + TEST_NAME +'/validation/'
+MODEL_SAVE_PATH = 'model/lstm/model_' + TEST_NAME + '.h5'
+CHECKPOINT_PATH = 'model/checkpoints/model_' + TEST_NAME + '.hdf5'
 
 def create_dataset(dataset, look_back=1):
     dataX, dataY = [], []
@@ -76,8 +79,11 @@ model = Sequential()
 model.add(LSTM(64, input_shape=(train.shape[1], look_back)))
 model.add(Dense(1))
 model.compile(loss='mean_absolute_error', optimizer='adam')
-model.fit(trainX, trainY, epochs=20, batch_size=20, verbose=2)
+es = EarlyStopping(monitor='val_loss', mode='min', verbose=1, patience=10, restore_best_weights=True)
+model.fit(trainX, trainY, validation_data=(validationX, validationY), epochs=200, batch_size=20, verbose=2, callbacks=[es])
+model.save(MODEL_SAVE_PATH)
 
+model = load_model(MODEL_SAVE_PATH)
 # make predictions
 trainPredict = model.predict(trainX)
 testPredict = model.predict(testX)
