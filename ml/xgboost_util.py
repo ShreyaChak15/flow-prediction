@@ -3,10 +3,13 @@ import pandas as pd
 import numpy as np
 from pandas import concat
 
-def print_metrics(real, prediction):
+def print_metrics(real, prediction, op):
     print ('MSE: %f' % mean_squared_error(real, prediction))
     print ('MAE: %f' % mean_absolute_error(real, prediction))
     print ('R2: %f' % r2_score(real, prediction))
+    op.write('MSE: %f\n' % mean_squared_error(real, prediction))
+    op.write('MAE: %f\n' % mean_absolute_error(real, prediction))
+    op.write('R2: %f\n' % r2_score(real, prediction))
 
 def calculate_scaling(training_paths):
     scaling = {}

@@ -11,22 +11,7 @@ from keras.callbacks import callbacks, ModelCheckpoint, EarlyStopping
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.metrics import r2_score
 import os
-
-# fix random seed for reproducibility
-numpy.random.seed(7)
-
-#TEST_NAME = "KMeans"
-#TEST_NAME = "PageRank"
-#TEST_NAME = "SGD"
-TEST_NAME = "tensorflow"
-#TEST_NAME = "web_server"
-look_back = 5
-
-TRAIN_PATH = 'data/ml/' + TEST_NAME +'/training/'
-TEST_PATH = 'data/ml/' + TEST_NAME +'/test/'
-VALIDATION_PATH = 'data/ml/' + TEST_NAME +'/validation/'
-MODEL_SAVE_PATH = 'model/model_' + TEST_NAME + '.h5'
-CHECKPOINT_PATH = 'model/checkpoints/model_' + TEST_NAME + '.hdf5'
+import timeit
 
 def create_dataset(dataset, look_back=1):
     dataX, dataY = [], []
@@ -49,54 +34,86 @@ def load_dataset(path, ):
     dataset = dataset.astype('float32')
 
     dataset = dataset[:-1,:]
-
+    
     return dataset
 
-# normalize the dataset
-scaler = MinMaxScaler(feature_range=(0, 1))
+def main(TEST_NAME, output_file):
+    numpy.random.seed(7)
+    look_back = 5
+    
+    TRAIN_PATH = 'data/ml/' + TEST_NAME +'/training/'
+    TEST_PATH = 'data/ml/' + TEST_NAME +'/test/'
+    VALIDATION_PATH = 'data/ml/' + TEST_NAME +'/validation/'
+    MODEL_SAVE_PATH = 'model/ffnn/model_' + TEST_NAME + '.h5'
+    CHECKPOINT_PATH = 'model/checkpoints/model_' + TEST_NAME + '.hdf5'
+    LOG_FILE = 'results/ffnn/model_' + TEST_NAME + '.pkl'
+    
+    # normalize the dataset
+    scaler = MinMaxScaler(feature_range=(0, 1))
+    
+    train = load_dataset(TRAIN_PATH)
+    print("*** Training dataset loaded ***")
+    train = scaler.fit_transform(train)
+    
+    test = load_dataset(TEST_PATH)
+    print("*** Test dataset loaded ***")
+    test = scaler.transform(test)
+    
+    validation = load_dataset(VALIDATION_PATH)
+    print("*** Validation dataset loaded ***")
+    validation = scaler.transform(validation)
+    
+    
+    trainX, trainY = create_dataset(train, look_back)
+    testX, testY = create_dataset(test, look_back)
+    validationX, validationY = create_dataset(validation, look_back)
+    print("*** All datasets created ***")
+    
+    model = Sequential()
+    model.add(Dense(5, input_dim=trainX.shape[1], activation='relu'))
+    model.add(Dense(5, activation='relu'))
+    model.add(Dense(1, activation='sigmoid'))
+    model.compile(loss='mean_absolute_error', optimizer='adam')
+    es = EarlyStopping(monitor='val_loss', mode='min', verbose=1, patience=10, restore_best_weights=True)
+    #checkpoint = ModelCheckpoint(CHECKPOINT_PATH, monitor='val_loss', verbose=1, save_best_only=True)
+    #callbacks_list = [es, checkpoint]
+    
+    history = model.fit(trainX, trainY, 
+                        validation_data=(validationX, validationY), 
+                        epochs=200, batch_size=10, verbose=2, callbacks=[es])
+    
+    model.save(MODEL_SAVE_PATH)
+    print("*** Model fitted ***")
+    print("Saved model to disk")
+    
+    with (LOG_FILE, 'wb') as f:
+        pickle.dump(model.history.history, f)
+    
+    # make predictions
+    model = load_model(MODEL_SAVE_PATH)
+    
+    trainPredict = model.predict(trainX)
+    testPredict = model.predict(testX)
+    validationPredict = model.predict(validationX)
+    
+    trainScore = r2_score(trainY.flatten(), trainPredict.flatten())
+    print('Train Score: %.2f R2' % (trainScore))
+    output_file.write('Train Score: %.2f R2\n' % (trainScore))
+    testScore = r2_score(testY.flatten(), testPredict.flatten())
+    print('Test Score: %.2f R2' % (testScore))
+    output_file.write('Test Score: %.2f R2\n' % (testScore))
+    validationScore = r2_score(validationY.flatten(), validationPredict.flatten())
+    print('Validation Score: %.2f R2' % (validationScore))
+    output_file.write('Validation Score: %.2f R2\n' % (validationScore))
 
-train = load_dataset(TRAIN_PATH)
-print("*** Training dataset loaded ***")
-train = scaler.fit_transform(train)
-
-test = load_dataset(TEST_PATH)
-print("*** Test dataset loaded ***")
-test = scaler.transform(test)
-
-validation = load_dataset(VALIDATION_PATH)
-print("*** Validation dataset loaded ***")
-validation = scaler.transform(validation)
-
-
-trainX, trainY = create_dataset(train, look_back)
-testX, testY = create_dataset(test, look_back)
-validationX, validationY = create_dataset(validation, look_back)
-print("*** All datasets created ***")
-
-model = Sequential()
-model.add(Dense(5, input_dim=trainX.shape[1], activation='relu'))
-model.add(Dense(5, activation='relu'))
-model.add(Dense(1, activation='sigmoid'))
-model.compile(loss='mean_absolute_error', optimizer='adam')
-es = EarlyStopping(monitor='val_loss', mode='min', verbose=1, patience=10, restore_best_weights=True)
-#checkpoint = ModelCheckpoint(CHECKPOINT_PATH, monitor='val_loss', verbose=1, save_best_only=True)
-#callbacks_list = [es, checkpoint]
-
-model.fit(trainX, trainY, validation_data=(validationX, validationY), epochs=250, batch_size=10, verbose=2, callbacks=[es])
-model.save(MODEL_SAVE_PATH)
-print("*** Model fitted ***")
-print("Saved model to disk")
-
-# make predictions
-model = load_model(MODEL_SAVE_PATH)
-
-trainPredict = model.predict(trainX)
-testPredict = model.predict(testX)
-validationPredict = model.predict(validationX)
-
-trainScore = r2_score(trainY.flatten(), trainPredict.flatten())
-print('Train Score: %.2f R2' % (trainScore))
-testScore = r2_score(testY.flatten(), testPredict.flatten())
-print('Test Score: %.2f R2' % (testScore))
-validationScore = r2_score(validationY.flatten(), validationPredict.flatten())
-print('Validation Score: %.2f R2' % (validationScore))
+if __name__ == "__main__":        
+    RESULTS_PATH = 'results/ffnn'
+    output_file = open(os.path.join(RESULTS_PATH, 'results.txt'), 'w+')
+    
+    print("Running all experiments:\n")
+    #### tensorflow requires too much time
+    for test_name in ["KMeans", "PageRank", "SGD", "web_server"]:
+        print("Case %s" %(test_name))
+        output_file.write('CASE: '+ test_name + '\n')
+        main(test_name, output_file)
+    output_file.close()
