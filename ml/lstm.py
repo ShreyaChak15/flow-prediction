@@ -82,7 +82,7 @@ def main(TEST_NAME, output_file):
                         epochs=20, batch_size=20, verbose=2, callbacks=[es])
     model.save(MODEL_SAVE_PATH)
     
-    with (LOG_FILE, 'wb') as f:
+    with open(LOG_FILE, 'wb') as f:
         pickle.dump(model.history.history, f)
     
     model = load_model(MODEL_SAVE_PATH)
