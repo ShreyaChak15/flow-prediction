@@ -36,3 +36,5 @@ for practical use.
 We then try to gauge which features might be important for each application.
 Plots for feature importance alongside their F2 scores are stored in:
 `results/xgboost/name_of_application`
+
+**Note** : Due to the large size of the files, Git open downloads pointers instead of the original files. You can use `git lfs` to download the complete files.
