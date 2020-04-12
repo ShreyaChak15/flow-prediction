@@ -13,7 +13,7 @@ All implemented on Spark clusters
 - Feed Forward Neural Networks
 - Long Short Term Memory
 - Gradient Boosting Decision Trees
-- Convolutional Neural Networks 
+- Convolutional Neural Networks (yet to test)
 
 ## To run the Machine Learning models
 (Codes are written in Python3)
@@ -25,8 +25,8 @@ e.g `python ml/xgboost_learn.py`
 ## Results
 - The values for different error metrics are stored in:
 `results/name_of_ml_model/results.txt`
-- The log files for FFNN, CNN and LSTM are stored in:
-`results/name_of_ml_model/name_of_application`
+- The log files for FFNN and LSTM are stored in:
+`results/name_of_ml_model/loss_models`
 - The models are stored in:
 `model/name_of_ml_model`
 
