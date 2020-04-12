@@ -27,6 +27,8 @@ e.g `python ml/xgboost_learn.py`
 `results/name_of_ml_model/results.txt`
 - The log files for FFNN and LSTM are stored in:
 `results/name_of_ml_model/loss_models`
+- Loss plots for FFNN and LSTM are stored in:
+`results/name_of_ml_model/loss_models`
 - The models are stored in:
 `model/name_of_ml_model`
 
