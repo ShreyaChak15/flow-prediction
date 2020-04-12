@@ -4,18 +4,18 @@ Created on Sun Apr 12 11:59:32 2020
 
 @author: shreya
 """
-
+import numpy
 import pandas as pd
 import math
 from keras.models import Sequential
-from keras.layers import Dense
-from keras.layers import LSTM
+from keras.layers import Dense, Conv1D, TimeDistributed, Flatten
 from keras.models import load_model
 from keras.callbacks import callbacks, ModelCheckpoint, EarlyStopping
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.metrics import r2_score
 import os
-import pickle
+
+import pickle 
 
 look_back = 3
 
@@ -51,9 +51,9 @@ def main(TEST_NAME, output_file):
     TRAIN_PATH = 'data/ml/' + TEST_NAME +'/training/'
     TEST_PATH = 'data/ml/' + TEST_NAME +'/test/'
     VALIDATION_PATH = 'data/ml/' + TEST_NAME +'/validation/'
-    MODEL_SAVE_PATH = 'model/lstm/model_' + TEST_NAME + '.h5'
-    CHECKPOINT_PATH = 'model/checkpoints/model_' + TEST_NAME + '.hdf5'
-    LOG_FILE = 'results/lstm/model_' + TEST_NAME + '.pkl'
+    MODEL_SAVE_PATH = 'model/conv/model_' + TEST_NAME + '.h5'
+    #CHECKPOINT_PATH = 'model/checkpoints/model_' + TEST_NAME + '.hdf5'
+    LOG_FILE = 'results/conv/loss_models/model_' + TEST_NAME + '.pkl'
     scaler = MinMaxScaler(feature_range=(0, 1))
     
     train = load_dataset(TRAIN_PATH)
@@ -107,7 +107,7 @@ def main(TEST_NAME, output_file):
 
 
 if __name__ == "__main__":        
-    RESULTS_PATH = 'results/ffnn'
+    RESULTS_PATH = 'results/conv'
     output_file = open(os.path.join(RESULTS_PATH, 'results.txt'), 'w+')
     
     print("Running all experiments:\n")

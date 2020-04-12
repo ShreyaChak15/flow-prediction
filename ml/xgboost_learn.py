@@ -36,6 +36,8 @@ def print_performance(files, MODEL_SAVE_PATH, scaling, model, op, write_to_simul
 
     
     xgboost_util.print_metrics(real, predicted, op)
+    
+
 
 def main(TEST_NAME, output_file):
     random.seed(0)
@@ -77,6 +79,8 @@ def main(TEST_NAME, output_file):
     model = xgboost.train(param, training, param['num_epochs'])
     pickle.dump(model, open(MODEL_SAVE_PATH, "wb"))
     
+    show_plots(MODEL_SAVE_PATH)
+    
     xgboost.plot_importance(model, max_num_features=10)
     #plt.rcParams['figure.figsize'] = [50, 10]
     plt.title('XGBoost Feature importance plot for case ' + TEST_NAME)
@@ -92,7 +96,7 @@ def main(TEST_NAME, output_file):
     print_performance(test_files, MODEL_SAVE_PATH, scaling, model, output_file)
     
     print ('VALIDATION')
-    output_file.write('VALIDATION\n')
+    output_file.write('VALIDATION\n\n')
     print_performance(validation_files, MODEL_SAVE_PATH, scaling, model, output_file)
     
 
