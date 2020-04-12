@@ -11,6 +11,7 @@ from keras.callbacks import callbacks, ModelCheckpoint, EarlyStopping
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.metrics import r2_score
 import os
+import pickle
 
 look_back = 3
 
