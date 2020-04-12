@@ -16,7 +16,7 @@ All implemented on Spark clusters
 - Convolutional Neural Networks (yet to test)
 
 ## To run the Machine Learning models
-(Codes are written in Python3)
+(Codes are written in Python3 - can be found in the `ml` directory)
 
 From base directory, run `python ml/name_of_ml model.py`
 
