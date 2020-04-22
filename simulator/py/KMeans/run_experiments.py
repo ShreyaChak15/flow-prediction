@@ -5,7 +5,7 @@ import threading
 import multiprocessing
 import os
 
-number_of_threads = 6
+number_of_threads = 2
 template = '../../simulator 1 input/{0} > trace/result_{1}'
 
 #generate config
@@ -37,6 +37,6 @@ print('\n')
 print ('finished', len(threads), 'experiments')
 
 #run logs
-os.system('python draw_fct.py > logs/log.txt')
+# os.system('python draw_fct.py > logs/log.txt')
 #draw stats
-os.system('python draw_stats.py')
+# os.system('python draw_stats.py')
