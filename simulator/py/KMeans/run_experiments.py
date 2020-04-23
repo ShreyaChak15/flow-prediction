@@ -9,7 +9,7 @@ number_of_threads = 2
 template = '../../simulator 1 input/{0} > trace/result_{1}'
 
 #generate config
-os.system('python2 generate_config.py')
+os.system('python generate_config.py')
 
 #run make
 bashCommand = "make --directory ../../"

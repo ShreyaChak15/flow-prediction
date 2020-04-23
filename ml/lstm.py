@@ -50,8 +50,8 @@ def main(TEST_NAME, output_file):
     TEST_PATH = 'data/ml/' + TEST_NAME +'/test/'
     VALIDATION_PATH = 'data/ml/' + TEST_NAME +'/validation/'
     MODEL_SAVE_PATH = 'model/lstm/model_' + TEST_NAME + '.h5'
-    CHECKPOINT_PATH = 'model/checkpoints/model_' + TEST_NAME + '.hdf5'
-    LOG_FILE = 'results/lstm/model_' + TEST_NAME + '.pkl'
+    #CHECKPOINT_PATH = 'model/checkpoints/model_' + TEST_NAME + '.hdf5'
+    LOG_FILE = 'results/lstm/loss_models/model_' + TEST_NAME + '.pkl'
     scaler = MinMaxScaler(feature_range=(0, 1))
     
     train = load_dataset(TRAIN_PATH)
@@ -104,7 +104,7 @@ def main(TEST_NAME, output_file):
 
 
 if __name__ == "__main__":        
-    RESULTS_PATH = 'results/ffnn'
+    RESULTS_PATH = 'results/lstm'
     output_file = open(os.path.join(RESULTS_PATH, 'results.txt'), 'w+')
     
     print("Running all experiments:\n")
