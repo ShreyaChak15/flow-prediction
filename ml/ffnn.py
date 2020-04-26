@@ -45,14 +45,15 @@ def main(TEST_NAME, output_file):
     TRAIN_PATH = 'data/ml/' + TEST_NAME +'/training/'
     TEST_PATH = 'data/ml/' + TEST_NAME +'/test/'
     VALIDATION_PATH = 'data/ml/' + TEST_NAME +'/validation/'
-    MODEL_SAVE_PATH = 'model/ffnn/model_' + TEST_NAME + '.h5'
+    MODEL_SAVE_PATH = 'model/ffnn/model' + TEST_NAME + '.h5'
     CHECKPOINT_PATH = 'model/checkpoints/model_' + TEST_NAME + '.hdf5'
-    LOG_FILE = 'results/ffnn/model_' + TEST_NAME + '.pkl'
+    LOG_FILE = 'results/ffnn/model' + TEST_NAME + '.pkl'
     
     # normalize the dataset
     scaler = MinMaxScaler(feature_range=(0, 1))
     
     train = load_dataset(TRAIN_PATH)
+    print(train.shape)
     print("*** Training dataset loaded ***")
     train = scaler.fit_transform(train)
     
@@ -79,8 +80,8 @@ def main(TEST_NAME, output_file):
     #checkpoint = ModelCheckpoint(CHECKPOINT_PATH, monitor='val_loss', verbose=1, save_best_only=True)
     #callbacks_list = [es, checkpoint]
     
-    history = model.fit(trainX, trainY, 
-                        validation_data=(validationX, validationY), 
+    history = model.fit(trainX, trainY,
+                        validation_data=(validationX, validationY),
                         epochs=200, batch_size=10, verbose=2, callbacks=[es])
     
     model.save(MODEL_SAVE_PATH)

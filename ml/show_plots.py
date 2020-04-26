@@ -24,19 +24,22 @@ def show_plots(filename, dataset):
 
 # plots
 
-show_plots('../results/lstm/loss_models/model_KMeans.pkl', 'KMeans')
+# show_plots('../results/lstm/loss_models/model_KMeans.pkl', 'KMeans')
+#
+# show_plots('../results/lstm/loss_models/model_PageRank.pkl', 'PageRank')
+#
+# show_plots('../results/lstm/loss_models/model_SGD.pkl', 'SGD')
+#
+# show_plots('../results/lstm/loss_models/model_web_server.pkl', 'Web Server')
 
-show_plots('../results/lstm/loss_models/model_PageRank.pkl', 'PageRank')
 
-show_plots('../results/lstm/loss_models/model_SGD.pkl', 'SGD')
+# show_plots('../results/ffnn/loss_models/model_KMeans.pkl', 'KMeans')
+#
+# show_plots('../results/ffnn/loss_models/model_PageRank.pkl', 'PageRank')
+#
+# show_plots('../results/ffnn/loss_models/model_SGD.pkl', 'SGD')
+#
+# show_plots('../results/ffnn/loss_models/model_web_server.pkl', 'Web Server')
 
-show_plots('../results/lstm/loss_models/model_web_server.pkl', 'Web Server')
-
-
-show_plots('../results/ffnn/loss_models/model_KMeans.pkl', 'KMeans')
-
-show_plots('../results/ffnn/loss_models/model_PageRank.pkl', 'PageRank')
-
-show_plots('../results/ffnn/loss_models/model_SGD.pkl', 'SGD')
-
-show_plots('../results/ffnn/loss_models/model_web_server.pkl', 'Web Server')
+# show_plots('../results/ffnn/loss_models/model_wo_io_KMeans.pkl', 'KMeans')
+# show_plots('../results/lstm/loss_models/model_wo_io_KMeans.pkl', 'KMeans')

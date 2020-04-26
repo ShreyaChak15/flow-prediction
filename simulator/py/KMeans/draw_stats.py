@@ -1,15 +1,14 @@
 import os
 import pandas as pd
 import matplotlib
-matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import math
 import numpy as np
 
-SIMULATOR_PATH = '/home/voja/work/sigcomm/simulator/final/KMeans/50/t0t0/'
-PATH_FLOW_DISTRIBUTION = './data/flow_distribution.txt'
-PATH_EXECUTION_TIME = './data/execution_time.txt'
-PATH_INCOMING_FLOW = './data/incoming_flow.txt'
+SIMULATOR_PATH = 'C:/D-drive-18921/College/Cloud Computing/flux/simulator/py/KMeans/trace/'
+PATH_FLOW_DISTRIBUTION = 'data/flow_distribution.txt'
+PATH_EXECUTION_TIME = 'data/execution_time.txt'
+PATH_INCOMING_FLOW = 'data/incoming_flow.txt'
 
 def draw_flow_distribution():
     flows = []
@@ -66,7 +65,7 @@ def draw_execution_time():
     plt.ylabel('CDF', fontsize=18)
     plt.grid(True)
     plt.legend()
-    figure.savefig("./data/execution_time.pdf", bbox_inches='tight')
+    figure.savefig("data/execution_time.pdf", bbox_inches='tight')
 
 def draw_incoming_flow():
     freqs = []
@@ -99,5 +98,5 @@ def draw_incoming_flow():
     figure.savefig("./data/incoming_flows.pdf", bbox_inches='tight')
 
 draw_execution_time()
-draw_flow_distribution()
-draw_incoming_flow()
+# draw_flow_distribution()
+# draw_incoming_flow()

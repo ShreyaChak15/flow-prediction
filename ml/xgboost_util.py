@@ -2,6 +2,7 @@ from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_error
 import pandas as pd
 import numpy as np
 from pandas import concat
+from collections import Counter
 
 def print_metrics(real, prediction, op):
     print ('MSE: %f' % mean_squared_error(real, prediction))
@@ -51,6 +52,7 @@ def prepare_files(files, window_size, scaling, target_column='flow_size'):
         result.append((final_df, flow_size))
 
     return result
+        
 
 def make_io(data):
     inputs = None

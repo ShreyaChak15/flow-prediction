@@ -1,7 +1,6 @@
 import pandas as pd
 import numpy as np
 import matplotlib
-matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import math
 import os
@@ -72,15 +71,18 @@ def draw_cdf(raw_data, figure, file_name, column_name):
     global average_dimension
     #algorithm_name = get_algorithm_name(file_name)
 
-    raw_data = sorted (raw_data)
+    raw_data = sorted (raw_data) ##sort based on FCT, so now smallest job is at first
     raw_data99 = raw_data[int(len(raw_data)*0.99)]
-    data = map(lambda x: math.log10(x), raw_data)
+    #print(raw_data99)
+    data = list(map(lambda x: math.log10(x), raw_data))
     
     #print data
     #print
     y = np.arange(0.,1.,1./len(data))
     if len(y)!=len(data):
         y = y[:-1]
+    #print(len(data))
+    #print(data)
     plt.plot(data, y, label=file_name, linewidth=2, linestyle=get_linesyle(file_name), color=get_color(file_name))
 
     average_dimension.append((
@@ -97,28 +99,29 @@ def write_to_file(x, file_name):
             f.write(str(i)+'\n')
 
 
-def plot_column(column_number, column_name, f_write=False):
+def plot_column(column_number, column_name, f_write=True):
     global average_dimension
     average_dimension = []
     figure = plt.figure(figsize=(24.0, 15.0))
 
     for f in os.listdir('trace'):
         file_path = os.path.join('trace', f)
-        df = pd.read_csv(file_path, skipfooter=4, header=None, delimiter=' ')
+        df = pd.read_csv(file_path, skipfooter=4, header=None, delimiter=' ', engine='python')
         #extract flow completion time from the data set
-        fct = df[column_number].tolist()
+        fct = df[column_number].tolist() #flow completion time
+        #print(fct)
         data = draw_cdf(fct, figure, f, column_name)
         if f_write:
             write_to_file(data, 'logs/'+column_name+'_'+f)
 
-    print_stats(average_dimension, column_name)
+    #print_stats(average_dimension, column_name)
 
     plt.xlabel(column_name + ' log(us)', fontsize=18)
     plt.ylabel('CDF', fontsize=18)
     plt.grid(True)
     plt.legend()
-    figure.savefig('./data/'+column_name+".pdf", bbox_inches='tight')
-    #plt.show()
+    figure.savefig('data/'+column_name+".jpg", bbox_inches='tight')
+    plt.show()
     print
 
 def main():
