@@ -1,3 +1,6 @@
+from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_error
+from collections import Counter
+from pandas import concat
 import xgboost
 import os
 import xgboost_util
@@ -33,6 +36,10 @@ def print_performance(files, MODEL_SAVE_PATH, scaling, model, op, write_to_simul
         predicted += pred
 
     # xgboost_util.print_metrics(real, predicted, op)
+    print ('MSE: %f' % mean_squared_error(real, predicted))
+    print ('MAE: %f' % mean_absolute_error(real, predicted))
+    print ('R2: %f' % r2_score(real, predicted))
+    
 
 
 def main(TEST_NAME, output_file):
