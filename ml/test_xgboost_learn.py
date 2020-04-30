@@ -85,7 +85,7 @@ def main(TEST_NAME, output_file):
 
 if __name__ == "__main__":
     RESULTS_PATH = 'results/xgboost'
-    output_file = open(os.path.join(RESULTS_PATH, 'results.txt'), 'w+')
+    output_file = open(os.path.join(RESULTS_PATH, 'testing_results.txt'), 'w+')
 
     print("Running all experiments:\n")
     for test_name in ["KMeans", "PageRank", "SGD", "tensorflow", "web_server"]:
