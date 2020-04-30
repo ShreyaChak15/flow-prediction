@@ -11,4 +11,4 @@ pip3 install matplotlib
 pip3 install xgboost
 pip3 install tensorflow
 pip3 install keras
-# TODO - add commands to run
+pip3 install shap
