@@ -1,12 +1,12 @@
-#!bin/bash
+#!/bin/bash
 
 echo "Testing the models for prediction"
 
-echo "\n\n Feed Forward Neural Network"
+echo "Feed Forward Neural Network"
 python ml/ffnn.py
 
-echo "\n\n Long Short Term Memory"
+echo "Long Short Term Memory"
 python ml/lstm.py
 
-echo "\n\n XGBoost"
+echo "XGBoost"
 python ml/xgboost_learn.py
