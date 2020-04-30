@@ -78,13 +78,13 @@ def main(TEST_NAME, output_file):
     
     trainScore = r2_score(trainY.flatten(), trainPredict.flatten())
     print('Train Score: %.2f R2' % (trainScore))
-    output_file.write('Train Score: %.2f R2\n' % (trainScore))
+    # output_file.write('Train Score: %.2f R2\n' % (trainScore))
     testScore = r2_score(testY.flatten(), testPredict.flatten())
     print('Test Score: %.2f R2' % (testScore))
-    output_file.write('Test Score: %.2f R2\n' % (testScore))
+    # output_file.write('Test Score: %.2f R2\n' % (testScore))
     validationScore = r2_score(validationY.flatten(), validationPredict.flatten())
     print('Validation Score: %.2f R2' % (validationScore))
-    output_file.write('Validation Score: %.2f R2\n' % (validationScore))
+    # output_file.write('Validation Score: %.2f R2\n' % (validationScore))
 
 if __name__ == "__main__":        
     RESULTS_PATH = 'results/ffnn'
@@ -94,6 +94,6 @@ if __name__ == "__main__":
     #### tensorflow requires too much time
     for test_name in ["KMeans", "PageRank", "SGD", "web_server"]:
         print("Case %s" %(test_name))
-        output_file.write('CASE: '+ test_name + '\n')
+        # output_file.write('CASE: '+ test_name + '\n')
         main(test_name, output_file)
     output_file.close()
