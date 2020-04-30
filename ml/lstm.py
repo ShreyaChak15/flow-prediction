@@ -12,10 +12,7 @@ from sklearn.preprocessing import MinMaxScaler
 from sklearn.metrics import r2_score
 import os
 import pickle
-
-look_back = 3
-
-
+import argparse
 
 def create_dataset(dataset, look_back=1):
     dataX, dataY = [], []
@@ -42,16 +39,23 @@ def load_dataset(path, cut = -1):
 
     return dataset
 
-def main(TEST_NAME, output_file):
+def main(TEST_NAME, output_file, context, model_train=False):
     
     numpy.random.seed(7)
 
     TRAIN_PATH = 'data/ml/' + TEST_NAME +'/training/'
     TEST_PATH = 'data/ml/' + TEST_NAME +'/test/'
     VALIDATION_PATH = 'data/ml/' + TEST_NAME +'/validation/'
-    MODEL_SAVE_PATH = 'model/lstm/model_' + TEST_NAME + '.h5'
-    #CHECKPOINT_PATH = 'model/checkpoints/model_' + TEST_NAME + '.hdf5'
-    LOG_FILE = 'results/lstm/loss_models/model_' + TEST_NAME + '.pkl'
+    
+    if context==True:
+        MODEL_SAVE_PATH = 'model/lstm/with_context/model' + TEST_NAME + '.h5'
+        LOG_FILE = 'results/lstm/with_context/model' + TEST_NAME + '.pkl'
+    elif context==False:
+        MODEL_SAVE_PATH = 'model/lstm/without_context/model' + TEST_NAME + '.h5'
+        LOG_FILE = 'results/lstm/without_context/model' + TEST_NAME + '.pkl'
+    else:
+        pass
+    
     scaler = MinMaxScaler(feature_range=(0, 1))
     
     train = load_dataset(TRAIN_PATH)
@@ -64,27 +68,39 @@ def main(TEST_NAME, output_file):
     validation = scaler.fit_transform(validation)
     
     
-    trainX, trainY = create_dataset(train, look_back)
-    testX, testY = create_dataset(test, look_back)
-    validationX, validationY = create_dataset(validation, look_back)
+    if context==True:
+        look_back = 5
+        trainX, trainY = create_dataset(train, look_back)
+        testX, testY = create_dataset(test, look_back)
+        validationX, validationY = create_dataset(validation, look_back)
+    elif context==False:
+        look_back = 1
+        trainX, trainY = create_dataset(train, look_back)
+        testX, testY = create_dataset(test, look_back)
+        validationX, validationY = create_dataset(validation, look_back)
+    else:
+        pass
     
     
     trainX = numpy.reshape(trainX, (trainX.shape[0], train.shape[1], trainX.shape[1]))
     testX = numpy.reshape(testX, (testX.shape[0], test.shape[1], testX.shape[1]))
     validationX = numpy.reshape(validationX, (validationX.shape[0], validation.shape[1], validationX.shape[1]))
     
-    model = Sequential()
-    model.add(LSTM(64, input_shape=(train.shape[1], look_back)))
-    model.add(Dense(1))
-    model.compile(loss='mean_absolute_error', optimizer='adam')
-    es = EarlyStopping(monitor='val_loss', mode='min', verbose=1, patience=10, restore_best_weights=True)
-    history = model.fit(trainX, trainY, 
-                        validation_data=(validationX, validationY), 
-                        epochs=20, batch_size=20, verbose=2, callbacks=[es])
-    model.save(MODEL_SAVE_PATH)
+    if model_train==True:
+        model = Sequential()
+        model.add(LSTM(64, input_shape=(train.shape[1], look_back)))
+        model.add(Dense(1))
+        model.compile(loss='mean_absolute_error', optimizer='adam')
+        es = EarlyStopping(monitor='val_loss', mode='min', verbose=1, patience=10, restore_best_weights=True)
+        
+        history = model.fit(trainX, trainY, 
+                            validation_data=(validationX, validationY), 
+                            epochs=20, batch_size=20, verbose=1, callbacks=[es])
+        model.save(MODEL_SAVE_PATH)
+        
+        with open(LOG_FILE, 'wb') as f:
+            pickle.dump(model.history.history, f)
     
-    with open(LOG_FILE, 'wb') as f:
-        pickle.dump(model.history.history, f)
     
     model = load_model(MODEL_SAVE_PATH)
     # make predictions
@@ -102,15 +118,31 @@ def main(TEST_NAME, output_file):
     print('Validation Score: %.2f R2' % (validationScore))
     output_file.write('Validation Score: %.2f R2\n' % (validationScore))
 
+    show_plots.ml_plots(LOG_FILE, TEST_NAME)
 
-if __name__ == "__main__":        
+if __name__ == "__main__":    
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-train', action="store_true", default=False)   
+    args = parser.parse_args()
+    
     RESULTS_PATH = 'results/lstm'
     output_file = open(os.path.join(RESULTS_PATH, 'results.txt'), 'w+')
     
+    test_names = ["KMeans", "PageRank", "SGD"]
     print("Running all experiments:\n")
     #### tensorflow requires too much time
-    for test_name in ["KMeans", "PageRank", "SGD", "web_server"]:
+    print("***********Running models with context***********")
+    output_file.write('RUNNING MODELS WITH CONTEXT\n\n')
+    for test_name in test_names:
         print("Case %s" %(test_name))
         output_file.write('CASE: '+ test_name + '\n')
-        main(test_name, output_file)
+        main(test_name, output_file, context=True, model_train = args.train)
+    
+    print("***********Running models without context***********")
+    output_file.write('\n\nRUNNING MODELS WITHOUT CONTEXT\n\n')
+    for test_name in test_names:
+        print("Case %s" %(test_name))
+        output_file.write('CASE: '+ test_name + '\n')
+        main(test_name, output_file, context=False, model_train = args.train)
     output_file.close()

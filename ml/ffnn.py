@@ -13,8 +13,10 @@ from sklearn.metrics import r2_score
 import os
 import pickle 
 import timeit
+from show_plots import ml_plots
+import argparse
 
-def create_dataset(dataset, look_back=1):
+def create_dataset(dataset, look_back):
     dataX, dataY = [], []
     for i in range(len(dataset)-look_back-1):
         a = dataset[i:(i+look_back), :].copy()
@@ -23,7 +25,7 @@ def create_dataset(dataset, look_back=1):
         dataY.append(dataset[i + look_back - 1, -1])
     return numpy.array(dataX), numpy.array(dataY)
 
-def load_dataset(path, ):
+def load_dataset(path):
     dfs = []
     for f in os.listdir(path):
         df = pd.read_csv(path + f, engine='python', skipfooter=1)
@@ -38,22 +40,27 @@ def load_dataset(path, ):
     
     return dataset
 
-def main(TEST_NAME, output_file):
+def main(TEST_NAME, output_file, context, model_train):
+    
     numpy.random.seed(7)
-    look_back = 5
     
     TRAIN_PATH = 'data/ml/' + TEST_NAME +'/training/'
     TEST_PATH = 'data/ml/' + TEST_NAME +'/test/'
     VALIDATION_PATH = 'data/ml/' + TEST_NAME +'/validation/'
-    MODEL_SAVE_PATH = 'model/ffnn/model' + TEST_NAME + '.h5'
-    CHECKPOINT_PATH = 'model/checkpoints/model_' + TEST_NAME + '.hdf5'
-    LOG_FILE = 'results/ffnn/model' + TEST_NAME + '.pkl'
+    
+    if context==True:
+        MODEL_SAVE_PATH = 'model/ffnn/with_context/model' + TEST_NAME + '.h5'
+        LOG_FILE = 'results/ffnn/with_context/model' + TEST_NAME + '.pkl'
+    elif context==False:
+        MODEL_SAVE_PATH = 'model/ffnn/without_context/model' + TEST_NAME + '.h5'
+        LOG_FILE = 'results/ffnn/without_context/model' + TEST_NAME + '.pkl'
+    else:
+        pass
     
     # normalize the dataset
     scaler = MinMaxScaler(feature_range=(0, 1))
     
     train = load_dataset(TRAIN_PATH)
-    print(train.shape)
     print("*** Training dataset loaded ***")
     train = scaler.fit_transform(train)
     
@@ -65,31 +72,37 @@ def main(TEST_NAME, output_file):
     print("*** Validation dataset loaded ***")
     validation = scaler.transform(validation)
     
+    if context==True:
+        look_back = 5
+        trainX, trainY = create_dataset(train, look_back)
+        testX, testY = create_dataset(test, look_back)
+        validationX, validationY = create_dataset(validation, look_back)
+    elif context==False:
+        look_back = 1
+        trainX, trainY = create_dataset(train, look_back)
+        testX, testY = create_dataset(test, look_back)
+        validationX, validationY = create_dataset(validation, look_back)
+    else:
+        pass
     
-    trainX, trainY = create_dataset(train, look_back)
-    testX, testY = create_dataset(test, look_back)
-    validationX, validationY = create_dataset(validation, look_back)
-    print("*** All datasets created ***")
-    
-    model = Sequential()
-    model.add(Dense(5, input_dim=trainX.shape[1], activation='relu'))
-    model.add(Dense(5, activation='relu'))
-    model.add(Dense(1, activation='sigmoid'))
-    model.compile(loss='mean_absolute_error', optimizer='adam')
-    es = EarlyStopping(monitor='val_loss', mode='min', verbose=1, patience=10, restore_best_weights=True)
-    #checkpoint = ModelCheckpoint(CHECKPOINT_PATH, monitor='val_loss', verbose=1, save_best_only=True)
-    #callbacks_list = [es, checkpoint]
-    
-    history = model.fit(trainX, trainY,
+    if model_train==True:
+        model = Sequential()
+        model.add(Dense(5, input_dim=trainX.shape[1], activation='relu'))
+        model.add(Dense(5, activation='relu'))
+        model.add(Dense(1, activation='sigmoid'))
+        model.compile(loss='mean_absolute_error', optimizer='adam')
+        es = EarlyStopping(monitor='val_loss', mode='min', verbose=1, patience=10, restore_best_weights=True)
+
+        history = model.fit(trainX, trainY,
                         validation_data=(validationX, validationY),
-                        epochs=200, batch_size=10, verbose=2, callbacks=[es])
+                        epochs=200, batch_size=20, verbose=1, callbacks=[es])
     
-    model.save(MODEL_SAVE_PATH)
-    print("*** Model fitted ***")
-    print("Saved model to disk")
+        model.save(MODEL_SAVE_PATH)
+        print("*** Model fitted ***")
+        print("Saved model to disk")
     
-    with open(LOG_FILE, 'wb') as f:
-        pickle.dump(model.history.history, f)
+        with open(LOG_FILE, 'wb') as f:
+            pickle.dump(model.history.history, f)
     
     # make predictions
     model = load_model(MODEL_SAVE_PATH)
@@ -107,15 +120,32 @@ def main(TEST_NAME, output_file):
     validationScore = r2_score(validationY.flatten(), validationPredict.flatten())
     print('Validation Score: %.2f R2' % (validationScore))
     output_file.write('Validation Score: %.2f R2\n' % (validationScore))
+    
+    ml_plots(LOG_FILE, TEST_NAME)
 
-if __name__ == "__main__":        
+if __name__ == "__main__":  
+    
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-train', action="store_true", default=False)   
+    args = parser.parse_args()
+    
     RESULTS_PATH = 'results/ffnn'
     output_file = open(os.path.join(RESULTS_PATH, 'results.txt'), 'w+')
-    
+    test_names = ["KMeans", "PageRank", "SGD"]
     print("Running all experiments:\n")
     #### tensorflow requires too much time
-    for test_name in ["KMeans", "PageRank", "SGD", "web_server"]:
+    print("***********Running models with context***********")
+    output_file.write('RUNNING MODELS WITH CONTEXT\n\n')
+    for test_name in test_names:
         print("Case %s" %(test_name))
         output_file.write('CASE: '+ test_name + '\n')
-        main(test_name, output_file)
+        main(test_name, output_file, context=True, model_train=args.train)
+    
+    print("***********Running models without context***********")
+    output_file.write('\n\nRUNNING MODELS WITHOUT CONTEXT\n\n')
+    for test_name in test_names:
+        print("Case %s" %(test_name))
+        output_file.write('CASE: '+ test_name + '\n')
+        main(test_name, output_file, context=False, model_train=args.train)
+        
     output_file.close()
