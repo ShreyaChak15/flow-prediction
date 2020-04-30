@@ -32,7 +32,7 @@ def print_performance(files, MODEL_SAVE_PATH, scaling, model, op, write_to_simul
         real += outputs
         predicted += pred
 
-    xgboost_util.print_metrics(real, predicted, op)
+    # xgboost_util.print_metrics(real, predicted, op)
 
 
 def main(TEST_NAME, output_file):
