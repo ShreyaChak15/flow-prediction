@@ -7,20 +7,26 @@ Created on Sun Apr 12 15:57:38 2020
 import pickle
 import matplotlib.pyplot as plt
 import numpy as np
+import os
 
-def show_plots(filename, dataset):
+def ml_plots(filename, dataset):
     hist = pickle.load(open(filename, "rb" ) )
+    SAVE_PLOT= os.path.dirname(filename) + '/' + dataset + '.jpg'
+    
     val_loss = hist['val_loss']
     loss = hist['loss']
     
+    plt.figure()
     plt.plot(val_loss, label='Validation Loss')
     plt.plot(loss, label='Training Loss')
     plt.xlabel('Epochs')
     plt.ylabel('Loss')
-    plt.xticks(np.arange(0, max(len(val_loss), len(loss))+1, 5.0))
+    plt.xticks(np.arange(0, max(len(val_loss), len(loss))+1, 10))
     plt.title(('Losses over epoch: ' + dataset))
-    plt.legend(bbox_to_anchor=(1.1, 1.05))
-    plt.show()
+    plt.legend(loc= 'upper right', bbox_to_anchor=(1.1, 1.05))
+    
+    plt.savefig(SAVE_PLOT)
+    #plt.show()
 
 # plots
 
