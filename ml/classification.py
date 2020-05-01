@@ -63,7 +63,7 @@ def print_performance(eval_type, inputs, outputs, MODEL_SAVE_PATH, PLOT_PATH, op
     
     accuracy = accuracy_score(outputs, pred)
     print("Accuracy: %f" % accuracy)
-    op.write("\nAccuracy: %f" % accuracy)
+    op.write("Accuracy: %f" % accuracy)
     print("R2: %f" % r2_score(outputs, pred))
     op.write("\nR2: %f\n" % r2_score(outputs, pred))
     
@@ -129,11 +129,17 @@ def main(TEST_NAME, output_file, context, model_train, ml_model):
             rf = RandomForestClassifier(n_estimators = NUMBER_OF_TREES, class_weight='balanced')
             model = rf.fit(inputs, outputs)
             pickle.dump(model, open(MODEL_SAVE_PATH, "wb"))
+            feature_importances = pd.DataFrame(rf.feature_importances_,
+                                   index = data[0][0].columns,
+                                    columns=['importance']).sort_values('importance', ascending=False)
+            #print(feature_importances)
+            print("****Model fitted****")
             
         if ml_model == 'FFNN':
             mlp = MLPClassifier(hidden_layer_sizes=(5, 5), activation='relu')
             model = mlp.fit(inputs, outputs)
             pickle.dump(model, open(MODEL_SAVE_PATH, "wb"))
+            print("****Model fitted****")
 
 
     print('TRAINING')

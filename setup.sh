@@ -2,7 +2,9 @@
 # apt-get
 sudo apt-get update
 sudo apt-get install vim
+sudo apt-get install python3.7
 sudo apt-get install python3-pip
+
 # python libraries
 pip3 install sklearn
 pip3 install numpy
