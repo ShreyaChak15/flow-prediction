@@ -118,7 +118,7 @@ def main(TEST_NAME, output_file, context, model_train=False):
     print('Validation Score: %.2f R2' % (validationScore))
     output_file.write('Validation Score: %.2f R2\n' % (validationScore))
 
-    show_plots.ml_plots(LOG_FILE, TEST_NAME)
+    # show_plots.ml_plots(LOG_FILE, TEST_NAME)
 
 if __name__ == "__main__":    
 
