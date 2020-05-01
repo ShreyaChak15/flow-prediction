@@ -1,1 +1,0 @@
-trace_location: ../../../data/simulator/KMeans/0.csv
