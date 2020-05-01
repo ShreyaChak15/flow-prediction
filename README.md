@@ -6,7 +6,7 @@
 - PageRank
 - SGD
 All implemented on Spark clusters
-- Tensorflow and Web Workload are not tested in our project.
+- Tensorflow and Web Workload are not tested in our project, due to extremely long time taken by the Tensorflow dataset and also their different characteristics from jobs run on Spark clusters.
 
 ## Machine Learning models implemented:
 - Feed Forward Neural Networks
@@ -22,7 +22,7 @@ All code is in Python3, and can be found in the `ml/` directory.
 
 ## Models and Results
 - Models are found in `model`, and then under the appropriate subdirectory (FFNN, LSTM or XGBoost). For each approach, we have models trained with and without context.
-- Classification models can be found in `model/classification`.
+- Classification models can be found in `model/classification` and are again trained with and without context.
 - Results and plots can be found in `results/`, with the same folder structure as the models. 
 
 **Note** : Due to the large size of the files, Git open downloads pointers instead of the original files. You can use `git lfs` to download the complete files.
