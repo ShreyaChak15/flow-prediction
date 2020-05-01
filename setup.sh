@@ -12,3 +12,4 @@ pip3 install xgboost
 pip3 install tensorflow
 pip3 install keras
 pip3 install shap
+pip3 install seaborn
