@@ -8,6 +8,7 @@ import pickle
 import matplotlib.pyplot as plt
 import numpy as np
 import os
+import seaborn as sn
 
 def ml_plots(filename, dataset):
     hist = pickle.load(open(filename, "rb" ) )
@@ -28,24 +29,18 @@ def ml_plots(filename, dataset):
     plt.savefig(SAVE_PLOT)
     #plt.show()
 
-# plots
+def my_confusion_matrix(df_cm, SAVE_PATH):
+    
+    plt.figure()
+    group_names = ['True Neg','False Pos','False Neg','True Pos']
+    group_counts = ["{0:0.0f}".format(value) for value in
+                    df_cm.flatten()]
+    group_percentages = ["{0:.2%}".format(value) for value in
+                         df_cm.flatten()/np.sum(df_cm)]
+    labels = [f"{v1}\n{v2}\n{v3}" for v1, v2, v3 in
+              zip(group_names,group_counts,group_percentages)]
+    labels = np.asarray(labels).reshape(2,2)
 
-# show_plots('../results/lstm/loss_models/model_KMeans.pkl', 'KMeans')
-#
-# show_plots('../results/lstm/loss_models/model_PageRank.pkl', 'PageRank')
-#
-# show_plots('../results/lstm/loss_models/model_SGD.pkl', 'SGD')
-#
-# show_plots('../results/lstm/loss_models/model_web_server.pkl', 'Web Server')
-
-
-# show_plots('../results/ffnn/loss_models/model_KMeans.pkl', 'KMeans')
-#
-# show_plots('../results/ffnn/loss_models/model_PageRank.pkl', 'PageRank')
-#
-# show_plots('../results/ffnn/loss_models/model_SGD.pkl', 'SGD')
-#
-# show_plots('../results/ffnn/loss_models/model_web_server.pkl', 'Web Server')
-
-# show_plots('../results/ffnn/loss_models/model_wo_io_KMeans.pkl', 'KMeans')
-# show_plots('../results/lstm/loss_models/model_wo_io_KMeans.pkl', 'KMeans')
+    sn.heatmap(df_cm, annot=labels, fmt='', cmap='Blues')
+    plt.savefig(SAVE_PATH)
+    #plt.show()
