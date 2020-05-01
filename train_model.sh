@@ -1,12 +1,11 @@
 #!/bin/bash
-
 echo "Training the models for prediction"
 
-echo "Feed Forward Neural Network"
-python ml/ffnn.py -train
+echo -e "\n\n++++++++++++  Feed Forward Neural Network  ++++++++++++"
+python3 ml/ffnn.py -train
 
-echo "Long Short Term Memory"
-python ml/lstm.py -train
+echo -e "\n\n++++++++++++  Long Short Term Memory  ++++++++++++"
+python3 ml/lstm.py -train
 
-echo "XGBoost"
-python ml/xgboost_learn.py -train
+echo -e "\n\n++++++++++++  XGBoost  ++++++++++++"
+python3 ml/xgboost_learn.py -train

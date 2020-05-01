@@ -96,13 +96,6 @@ def main(TEST_NAME, output_file, context, model_train):
         print("Saved model to disk")
         pickle.dump(model, open(MODEL_SAVE_PATH, "wb"))
 
-    plt.figure()
-    xgboost.plot_importance(model, importance_type="gain", max_num_features=10)
-    plt.rcParams['figure.figsize'] = [30, 10]
-    plt.title('XGBoost Feature importance plot for case ' + TEST_NAME)
-    plt.savefig(PLOT_PATH)
-    # plt.show()
-
     print('TRAINING')
     output_file.write('TRAINING\n')
     print_performance(inputs, outputs, data[0][0].columns, MODEL_SAVE_PATH, output_file)
@@ -114,6 +107,14 @@ def main(TEST_NAME, output_file, context, model_train):
     print('VALIDATION')
     output_file.write('VALIDATION\n')
     print_performance(inputs_val, outputs_val, data_val[0][0].columns, MODEL_SAVE_PATH, output_file)
+
+    model = pickle.load(open(MODEL_SAVE_PATH, "rb"))
+    plt.figure()
+    xgboost.plot_importance(model, importance_type="gain", max_num_features=10)
+    plt.rcParams['figure.figsize'] = [30, 10]
+    plt.title('XGBoost Feature importance plot for case ' + TEST_NAME)
+    plt.savefig(PLOT_PATH)
+    # plt.show()
 
 
 if __name__ == "__main__":
@@ -130,14 +131,14 @@ if __name__ == "__main__":
     print("***********Running models with context***********")
     output_file.write('RUNNING MODELS WITH CONTEXT\n\n')
     for test_name in test_names:
-        print("Case %s" %(test_name))
+        print("Dataset used: %s" %(test_name))
         output_file.write('CASE: '+ test_name + '\n')
         main(test_name, output_file, context=True, model_train=args.train)
     
     print("***********Running models without context***********")
     output_file.write('RUNNING MODELS WITHOUT CONTEXT\n\n')
     for test_name in test_names:
-        print("Case %s" %(test_name))
+        print("Dataset used: %s" %(test_name))
         output_file.write('CASE: '+ test_name + '\n')
         main(test_name, output_file, context=False, model_train=args.train)
         

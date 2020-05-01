@@ -118,7 +118,7 @@ def main(TEST_NAME, output_file, context, model_train=False):
     print('Validation Score: %.2f R2' % (validationScore))
     output_file.write('Validation Score: %.2f R2\n' % (validationScore))
 
-    show_plots.ml_plots(LOG_FILE, TEST_NAME)
+    # show_plots.ml_plots(LOG_FILE, TEST_NAME)
 
 if __name__ == "__main__":    
 
@@ -135,14 +135,14 @@ if __name__ == "__main__":
     print("***********Running models with context***********")
     output_file.write('RUNNING MODELS WITH CONTEXT\n\n')
     for test_name in test_names:
-        print("Case %s" %(test_name))
+        print("Dataset used: %s" %(test_name))
         output_file.write('CASE: '+ test_name + '\n')
         main(test_name, output_file, context=True, model_train = args.train)
     
     print("***********Running models without context***********")
     output_file.write('\n\nRUNNING MODELS WITHOUT CONTEXT\n\n')
     for test_name in test_names:
-        print("Case %s" %(test_name))
+        print("Dataset used: %s" %(test_name))
         output_file.write('CASE: '+ test_name + '\n')
         main(test_name, output_file, context=False, model_train = args.train)
     output_file.close()

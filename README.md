@@ -6,37 +6,25 @@
 - PageRank
 - SGD
 All implemented on Spark clusters
-- Tensorflow
-- Web Workload
+- Tensorflow and Web Workload are not tested in our project.
 
 ## Machine Learning models implemented:
 - Feed Forward Neural Networks
 - Long Short Term Memory
 - Gradient Boosting Decision Trees
-- Convolutional Neural Networks (yet to test)
 
-## To run the Machine Learning models
-(Codes are written in Python3 - can be found in the `ml` directory)
+## Running our project
+To just test the existing models, run `./test_models.sh`.
 
-From base directory, run `python ml/name_of_ml model.py`
+To train new models and test them, run `./train_models.sh`
 
-e.g `python ml/xgboost_learn.py`
+All code is in Python3, and can be found in the `ml/` directory.
 
-## Results
-- The values for different error metrics are stored in:
-`results/name_of_ml_model/results.txt`
-- The log files for FFNN and LSTM are stored in:
-`results/name_of_ml_model/loss_models`
-- Loss plots for FFNN and LSTM are stored in:
-`results/name_of_ml_model/loss_models`
-- The models are stored in:
-`model/name_of_ml_model`
-
-We validate the paper's claim that XGBoost gives the faster convergence and good values of R2
-for practical use.
-
-We then try to gauge which features might be important for each application.
-Plots for feature importance alongside their F2 scores are stored in:
-`results/xgboost/name_of_application`
+## Models and Results
+- Models are found in `model`, and then under the appropriate subdirectory (FFNN, LSTM or XGBoost). For each approach, we have models trained with and without context.
+- Classification models can be found in `model/classification`.
+- Results and plots can be found in `results/`, with the same folder structure as the models. 
 
 **Note** : Due to the large size of the files, Git open downloads pointers instead of the original files. You can use `git lfs` to download the complete files.
+
+For further details, please consult our slides and the linked document at the end: https://docs.google.com/presentation/d/1j2QaCtdq03E_P1AwEKAV2JEq9szJd-oHqz1DRmF1veA/edit?usp=sharing
