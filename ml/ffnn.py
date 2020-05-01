@@ -137,14 +137,14 @@ if __name__ == "__main__":
     print("***********Running models with context***********")
     output_file.write('RUNNING MODELS WITH CONTEXT\n\n')
     for test_name in test_names:
-        print("Case %s" %(test_name))
+        print("Dataset used: %s" %(test_name))
         output_file.write('CASE: '+ test_name + '\n')
         main(test_name, output_file, context=True, model_train=args.train)
     
     print("***********Running models without context***********")
     output_file.write('\n\nRUNNING MODELS WITHOUT CONTEXT\n\n')
     for test_name in test_names:
-        print("Case %s" %(test_name))
+        print("Dataset used: %s" %(test_name))
         output_file.write('CASE: '+ test_name + '\n')
         main(test_name, output_file, context=False, model_train=args.train)
         
